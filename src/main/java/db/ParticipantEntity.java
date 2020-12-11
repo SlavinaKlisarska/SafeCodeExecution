@@ -1,2 +1,4 @@
-package db;public class ParticipantEntity {
+package db;
+
+public class ParticipantEntity {
 }

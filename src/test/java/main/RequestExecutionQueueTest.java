@@ -1,2 +1,23 @@
-package main;public class RequestExecutionQueueTest {
+package main;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringRunner;
+
+@RunWith(SpringRunner.class)
+public class RequestExecutionQueueTest {
+
+    @Test
+    public void dummyTest() {
+        // given
+
+
+        // when
+
+
+        // then
+
+
+    }
+
 }
