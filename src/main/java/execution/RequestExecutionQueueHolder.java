@@ -1,6 +1,7 @@
 package execution;
 
 import input.Request;
+import main.Application;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
@@ -42,5 +43,6 @@ public class RequestExecutionQueueHolder {
 
     public void addRequest(Request request) {
         executionQueue.add(request);
+        Application.pokeEvaluationThread();
     }
 }

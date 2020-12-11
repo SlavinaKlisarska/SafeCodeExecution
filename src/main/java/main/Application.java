@@ -24,22 +24,37 @@ public class Application {
         Application.resultsQueueHolder = resultsQueueHolder;
     }
 
+    static Runnable evaluationRunnable =
+            () -> {
+                Optional<Request> requestOptional = executionQueueHolder.pollIfPossible();
+                requestOptional.ifPresent(request -> {
+                    resultsQueueHolder.submitResult(RequestExecutor.evaluateRequest(request));
+                    executionQueueHolder.finishExecution();
+                });
+            };
+    static Thread evaluationThread = new Thread(evaluationRunnable);
+
+    private static volatile boolean isEvaluationThreadActive;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
 
+        runEvaluationThread();
+    }
 
-        Runnable consumerRunnable =
-                () -> {
-                    Optional<Request> requestOptional = executionQueueHolder.pollIfPossible();
-                    requestOptional.ifPresent(request -> {
-                        resultsQueueHolder.submitResult(RequestExecutor.evaluateRequest(request));
-                        executionQueueHolder.finishExecution();
-                    });
-                };
+    private static void runEvaluationThread() {
+        isEvaluationThreadActive = true;
+        while(executionQueueHolder.hasActiveExecutions()) {
+            evaluationThread.start();
+        }
+        isEvaluationThreadActive = false;
+    }
 
-        Thread consumerThread = new Thread(consumerRunnable);
-        consumerThread.run();
 
+    public static void pokeEvaluationThread() {
+        if (!isEvaluationThreadActive) {
+            runEvaluationThread();
+        }
     }
 
 }
