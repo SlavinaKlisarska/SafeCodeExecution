@@ -1,10 +1,9 @@
-package main;
+package execution;
 
 import input.Request;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -29,13 +28,16 @@ public class RequestExecutionQueueHolder {
         return maxParallelExecutions == numberOfActiveExecutions;
     }
 
-    @Nullable
     public Optional<Request> pollIfPossible() {
         if (hasReachedMaxExecutions()) {
             return Optional.empty();
         } else {
             return Optional.ofNullable(executionQueue.poll());
         }
+    }
+
+    public void finishExecution() {
+        --numberOfActiveExecutions;
     }
 
 }
