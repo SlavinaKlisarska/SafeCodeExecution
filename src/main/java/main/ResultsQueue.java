@@ -10,4 +10,5 @@ import java.util.LinkedList;
 public class ResultsQueue {
 
     private LinkedList resultsQueue = new LinkedList<>();
+
 }
