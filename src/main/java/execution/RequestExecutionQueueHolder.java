@@ -40,4 +40,7 @@ public class RequestExecutionQueueHolder {
         --numberOfActiveExecutions;
     }
 
+    public void addRequest(Request request) {
+        executionQueue.add(request);
+    }
 }
