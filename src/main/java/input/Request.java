@@ -1,7 +1,7 @@
-package execution;
+package input;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class RequestExecutor {
+public class Request {
 }

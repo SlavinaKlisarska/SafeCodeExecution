@@ -7,8 +7,7 @@ import java.util.LinkedList;
 
 @Component
 @Scope("singleton")
-public class RequestExecutionQueue {
+public class ResultsQueue {
 
-    private LinkedList executionQueue = new LinkedList<>();
-
+    private LinkedList resultsQueue = new LinkedList<>();
 }
