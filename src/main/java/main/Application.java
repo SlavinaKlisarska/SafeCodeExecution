@@ -3,13 +3,13 @@ package main;
 import execution.RequestExecutionQueueHolder;
 import execution.RequestExecutor;
 import input.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Optional;
-
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"main","execution"})
 public class Application {
 
     static RequestExecutionQueueHolder executionQueueHolder;
@@ -24,36 +24,35 @@ public class Application {
         Application.resultsQueueHolder = resultsQueueHolder;
     }
 
-    static Runnable evaluationRunnable =
+    static Request currentRequest;
+
+    final static Runnable codeExecutionRunnable =
             () -> {
-                Optional<Request> requestOptional = executionQueueHolder.pollIfPossible();
-                requestOptional.ifPresent(request -> {
-                    resultsQueueHolder.submitResult(RequestExecutor.evaluateRequest(request));
-                    executionQueueHolder.finishExecution();
-                });
+                executionQueueHolder.beginExecution();
+                resultsQueueHolder.submitResult(RequestExecutor.evaluateRequest(currentRequest));
+                executionQueueHolder.finishExecution();
             };
-    static Thread evaluationThread = new Thread(evaluationRunnable);
 
-    private static volatile boolean isEvaluationThreadActive;
+    final static Logger logger = LoggerFactory.getLogger(Application.class);
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
 
-        runEvaluationThread();
-    }
+        //todo - start another thread that processes the results queue
 
-    private static void runEvaluationThread() {
-        isEvaluationThreadActive = true;
-        while(executionQueueHolder.hasActiveExecutions()) {
-            evaluationThread.start();
-        }
-        isEvaluationThreadActive = false;
-    }
-
-
-    public static void pokeEvaluationThread() {
-        if (!isEvaluationThreadActive) {
-            runEvaluationThread();
+        while (true) {
+            if (!executionQueueHolder.isQueueEmpty()) {
+                if (executionQueueHolder.hasReachedMaxExecutions()) {
+                    logger.info("New request cannot be processed at the moment because max_parallel_execution capacity has been reached.");
+                } else {
+                    logger.info("New request processing has begun. Previous number of active executions was " + executionQueueHolder.getNumberOfActiveExecutions());
+                    currentRequest = executionQueueHolder.poll();
+                    new Thread(codeExecutionRunnable).start();
+                }
+            } else {
+                logger.info("Request queue is empty.");
+            }
         }
     }
 

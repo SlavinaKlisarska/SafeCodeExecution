@@ -1,13 +1,11 @@
 package execution;
 
 import input.Request;
-import main.Application;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
@@ -19,22 +17,26 @@ public class RequestExecutionQueueHolder {
     private byte maxParallelExecutions;
 
     private byte numberOfActiveExecutions;
-    private ConcurrentLinkedQueue<Request> executionQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Request> executionQueue = new ConcurrentLinkedQueue<>();
 
-    public boolean hasActiveExecutions() {
-        return numberOfActiveExecutions > 0;
+    public byte getNumberOfActiveExecutions() {
+        return numberOfActiveExecutions;
     }
 
-    private boolean hasReachedMaxExecutions() {
+    public boolean hasReachedMaxExecutions() {
         return maxParallelExecutions == numberOfActiveExecutions;
     }
 
-    public Optional<Request> pollIfPossible() {
-        if (hasReachedMaxExecutions()) {
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(executionQueue.poll());
-        }
+    public boolean isQueueEmpty() {
+        return executionQueue.isEmpty();
+    }
+
+    public Request poll() {
+        return executionQueue.poll();
+    }
+
+    public void beginExecution() {
+        ++numberOfActiveExecutions;
     }
 
     public void finishExecution() {
@@ -43,6 +45,6 @@ public class RequestExecutionQueueHolder {
 
     public void addRequest(Request request) {
         executionQueue.add(request);
-        Application.pokeEvaluationThread();
     }
+
 }

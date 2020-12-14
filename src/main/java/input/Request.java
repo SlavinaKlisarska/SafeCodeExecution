@@ -1,7 +1,6 @@
 package input;
 
 import org.springframework.stereotype.Component;
-import participants.Participant;
 
 /**
  * internal representation of a single incoming request
@@ -9,12 +8,10 @@ import participants.Participant;
 @Component
 public class Request {
 
-    private Participant user;
     private String taskName;
     private String code;
 
-    public Request(Participant user, String taskName, String code) {
-        this.user = user;
+    public Request(String taskName, String code) {
         this.taskName = taskName;
         this.code = code;
     }
