@@ -38,7 +38,7 @@ public class RequestExecutor {
         try {
             reloadAndRunClass();
         } catch (ClassNotFoundException e) {
-            logger.error("New class not found at : " + participantClassPath + "/" + participantClassName + ". Error Message : " + e.getMessage());
+            logger.error("New class not found at : " + participantClassPath + participantClassName + ". Error Message : " + e.getMessage());
         } catch (IllegalAccessException e) {
             logger.error("Could not access new file : " + e.getMessage());
         } catch (InstantiationException e) {
