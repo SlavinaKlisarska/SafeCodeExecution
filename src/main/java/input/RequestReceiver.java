@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 public class RequestReceiver {
-
-    @Autowired
-    private RequestExecutionQueueHolder requestExecutionQueue;
 
     @Value( "${repo.url}" )
     private String repoUrl;
@@ -24,14 +23,21 @@ public class RequestReceiver {
         return repoUrl;
     }
 
-    @PostMapping(path = "/acceptTask", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/acceptTask")
     @ResponseBody
-    public int acceptCodeTask(@RequestParam(value = "userEmail") String userEmail, @RequestParam(value = "task") String task, @RequestParam(value = "code") String code) {
+    public boolean acceptNewTaskSubmition(@RequestParam(value = "userName") String userName, @RequestParam(value = "taskName") String task) {
 
-        requestExecutionQueue.addRequest(new Request(task, code));
+        try {
+            GitListener.getRepo(userName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 
-        int result = 0; //get the score the user made
+        Request request = new Request(task);
+        request.execute();
 
-        return result;
+
+        return true;
     }
 }
