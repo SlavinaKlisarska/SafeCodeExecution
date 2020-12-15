@@ -22,7 +22,7 @@ public class DynamicClassLoader extends ClassLoader {
         if(!RequestExecutor.participantClassName.equals(name))
             return super.loadClass(name);
 
-        final String fullFilePath = RequestExecutor.participantClassPath + "/" + RequestExecutor.participantClassName;
+        final String fullFilePath = RequestExecutor.participantClassPath + "/" + name;
         try {
             URL url = new URL(fullFilePath);
             URLConnection connection = url.openConnection();
@@ -39,7 +39,7 @@ public class DynamicClassLoader extends ClassLoader {
 
             byte[] classData = buffer.toByteArray();
 
-            return defineClass(RequestExecutor.participantClassName,
+            return defineClass(name,
                     classData, 0, classData.length);
 
         } catch (MalformedURLException e) {

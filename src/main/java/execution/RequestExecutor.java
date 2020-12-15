@@ -49,7 +49,7 @@ public class RequestExecutor {
     }
 
     private static void saveIncomingFile(final String fileAddress) {
-        //todo - fetch file from github and save to $
+        //todo - fetch file from github and save to participant.class.path
     }
 
     private static void reloadAndRunClass() throws ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException {
