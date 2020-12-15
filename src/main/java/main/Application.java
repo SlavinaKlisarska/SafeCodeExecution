@@ -13,15 +13,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application {
 
     static RequestExecutionQueueHolder executionQueueHolder;
-    static ResultsQueueHolder resultsQueueHolder;
 
     @Autowired
     public void setRequestExecutionQueueHolder(RequestExecutionQueueHolder requestExecutionQueueHolder){
         Application.executionQueueHolder = requestExecutionQueueHolder;
-    }
-    @Autowired
-    public void setResultsQueueHolder(ResultsQueueHolder resultsQueueHolder){
-        Application.resultsQueueHolder = resultsQueueHolder;
     }
 
     static Request currentRequest;
@@ -29,7 +24,7 @@ public class Application {
     final static Runnable codeExecutionRunnable =
             () -> {
                 executionQueueHolder.beginExecution();
-                resultsQueueHolder.submitResult(RequestExecutor.evaluateRequest(currentRequest));
+                RequestExecutor.invokeKataClient(currentRequest);
                 executionQueueHolder.finishExecution();
             };
 
@@ -38,8 +33,6 @@ public class Application {
     @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-
-        //todo - start another thread that processes the results queue
 
         while (true) {
             if (!executionQueueHolder.isQueueEmpty()) {

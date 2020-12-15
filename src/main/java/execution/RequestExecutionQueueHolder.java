@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @PropertySource("classpath:application.properties")
 public class RequestExecutionQueueHolder {
 
-    @Value("${max.parallel.executions:2}")
+    @Value("${max.parallel.executions:1}")
     private byte maxParallelExecutions;
 
     private byte numberOfActiveExecutions;

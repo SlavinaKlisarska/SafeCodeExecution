@@ -1,81 +1,74 @@
 package execution;
 
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
-import com.github.dockerjava.transport.DockerHttpClient;
 import input.Request;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import output.Result;
 
-import java.net.URI;
-import java.util.Optional;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @Component
-@PropertySource("classpath:docker-java.properties")
+@PropertySource("classpath:application.properties")
 public class RequestExecutor {
 
-    private static String DOCKER_HOST;
-    private static String DOCKER_CONFIG;
-    private static String API_VERSION;
-    private static String REGISTRY_USERNAME;
-    private static String REGISTRY_PASSWORD;
-    private static String REGISTRY_EMAIL;
-    private static String REGISTRY_URL;
+    final static Logger logger = LoggerFactory.getLogger(RequestExecutor.class);
 
-    @Value("${DOCKER_HOST}")
-    public void setDockerHost(String DOCKER_HOST){
-        RequestExecutor.DOCKER_HOST = DOCKER_HOST;
+    static String participantClassName;
+    static String participantClassPath;
+
+    @Autowired
+    public void setParticipantClassName(@Value("${participant.class.name}") String participantClassName){
+        RequestExecutor.participantClassName = participantClassName;
     }
-    @Value("${DOCKER_CONFIG}")
-    public void setDockerConfig(String DOCKER_CONFIG){
-        RequestExecutor.DOCKER_CONFIG = DOCKER_CONFIG;
+    @Autowired
+    public void setParticipantClassPath(@Value("${participant.class.path}") String participantClassPath){
+        RequestExecutor.participantClassPath = participantClassPath;
     }
 
-    @Value("${REGISTRY_USERNAME}")
-    public void setRegistryUsername(String REGISTRY_USERNAME){
-        RequestExecutor.REGISTRY_USERNAME = REGISTRY_USERNAME;
+    private final static String[] EMPTY_STRING_ARRAY = {};
+
+    public static void invokeKataClient(final Request request) {
+        saveIncomingFile(request.getFileAddress());
+
+        try {
+            reloadAndRunClass();
+        } catch (ClassNotFoundException e) {
+            logger.error("New class not found at : " + participantClassPath + "/" + participantClassName + ". Error Message : " + e.getMessage());
+        } catch (IllegalAccessException e) {
+            logger.error("Could not access new file : " + e.getMessage());
+        } catch (InstantiationException e) {
+            logger.error("Could not instantiate new class : " + e.getMessage());
+        } catch (InvocationTargetException e) {
+            logger.error("Invocation target exception : " + e.getMessage());
+        }
     }
 
-    @Value("${REGISTRY_PASSWORD}")
-    public void setRegistryPassword(String REGISTRY_PASSWORD){
-        RequestExecutor.REGISTRY_PASSWORD = REGISTRY_PASSWORD;
+    private static void saveIncomingFile(final String fileAddress) {
+        //todo - fetch file from github and save to $
     }
 
-    @Value("${REGISTRY_EMAIL}")
-    public void setRegistryEmail(String REGISTRY_EMAIL){
-        RequestExecutor.REGISTRY_EMAIL = REGISTRY_EMAIL;
-    }
+    private static void reloadAndRunClass() throws ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException {
+        DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(DynamicClassLoader.class.getClassLoader());
+        Class participantSolverClass = dynamicClassLoader.loadClass(participantClassName);
 
-    @Value("${REGISTRY_URL}")
-    public void setRegistryURL(String REGISTRY_URL){
-        RequestExecutor.REGISTRY_URL = REGISTRY_URL;
-    }
+        Method method = null;
+        try {
+            method = participantSolverClass.getMethod("main", String[].class);
+        } catch (NoSuchMethodException e) {
+            logger.error("Main method missing from class " + participantSolverClass.getName());
+        }
 
-    private static DockerClientConfig getDockerClientConfig() {
-        return DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost(DOCKER_HOST)
-                .withDockerTlsVerify(false)
-                .withRegistryUsername(REGISTRY_USERNAME)
-                .withRegistryPassword(REGISTRY_PASSWORD)
-                .withRegistryEmail(REGISTRY_EMAIL)
-                .withRegistryUrl(REGISTRY_URL)
-                .build();
-    }
+        if (method != null) {
+            method.invoke(null, (Object) EMPTY_STRING_ARRAY); // static method doesn't have an instance
+        } else {
+            logger.error("New class main method could not be obtained properly.");
+        }
 
-    private static DockerHttpClient getDockerHTTPClient() {
-        return new ApacheDockerHttpClient.Builder()
-                .dockerHost(URI.create(DOCKER_HOST))
-                .sslConfig(null) //todo - need this ??
-                .build();
-    }
-
-    public static Optional<Result> evaluateRequest(Request request) {
-        //todo
-        return Optional.empty();
     }
 
 }

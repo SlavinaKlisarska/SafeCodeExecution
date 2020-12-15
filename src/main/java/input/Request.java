@@ -11,14 +11,22 @@ import org.springframework.stereotype.Component;
 public class Request {
 
     private String taskName;
-    private String code;
+    private String fileAddress;
 
     @Autowired
     private RequestExecutionQueueHolder requestExecutionQueue;
 
     public Request(String taskName) {
         this.taskName = taskName;
-        this.code = code;
+        this.fileAddress = fileAddress;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public String getFileAddress() {
+        return fileAddress;
     }
 
     public void execute() {
