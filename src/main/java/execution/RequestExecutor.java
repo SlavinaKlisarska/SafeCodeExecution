@@ -37,9 +37,8 @@ public class RequestExecutor {
 
     private final static String[] EMPTY_STRING_ARRAY = {};
 
-    public static void invokeKataClient(final Request request) {
-        saveIncomingFile(request.getFileAddress());
-        DynamicCompiler.compileParticipantCode(request.getParticipantName());
+    public static void invokeKataClient(final String participantName) {
+        DynamicCompiler.compileParticipantCode(participantName);
 
         try {
             reloadAndRunClass();
@@ -52,10 +51,6 @@ public class RequestExecutor {
         } catch (InvocationTargetException e) {
             logger.error("Invocation target exception : " + e.getMessage());
         }
-    }
-
-    private static void saveIncomingFile(final String fileAddress) {
-        //todo - fetch file from github and save to participant.class.path
     }
 
     private static void reloadAndRunClass() throws ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException {
@@ -74,7 +69,7 @@ public class RequestExecutor {
         if (method != null) {
             method.invoke(null, (Object) EMPTY_STRING_ARRAY); // static method doesn't have an instance
         } else {
-            logger.error("New class main method could not be obtained properly.");
+            logger.error("New class " + participantMethodName + " method could not be obtained properly.");
         }
 
     }

@@ -1,32 +1,22 @@
 package execution;
 
-import static javax.tools.JavaCompiler.CompilationTask;
-import static javax.tools.JavaFileObject.Kind.SOURCE;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @Component
 @PropertySource("classpath:compiler.properties")
@@ -34,10 +24,18 @@ public class DynamicCompiler {
 
     final static Logger logger = LoggerFactory.getLogger(DynamicCompiler.class);
 
-    @Value("${base.source.path}")
+
     private static String baseSourcePath;
-    @Value("${base.output.path}")
     private static String baseOutputPath;
+
+    @Autowired
+    public void setBaseSourcePath(@Value("${base.source.path}") String baseSourcePath){
+        DynamicCompiler.baseSourcePath = baseSourcePath;
+    }
+    @Autowired
+    public void setBaseOutputPath(@Value("${base.output.path}") String baseOutputPath){
+        DynamicCompiler.baseOutputPath = baseOutputPath;
+    }
 
     public static void compileParticipantCode(String participantName) {
         final String systemFileSeparator = System.getProperty("file.separator");
