@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Request {
 
+    private String participantName;
     private String taskName;
     private String fileAddress;
 
@@ -19,6 +20,11 @@ public class Request {
     public Request(String taskName) {
         this.taskName = taskName;
         this.fileAddress = fileAddress;
+        this.participantName = participantName;
+    }
+
+    public String getParticipantName() {
+        return participantName;
     }
 
     public String getTaskName() {
@@ -31,6 +37,6 @@ public class Request {
 
     public void execute() {
         //TODO jar file
-        requestExecutionQueue.addRequest(new Request(taskName));
+        requestExecutionQueue.addRequest(this);
     }
 }

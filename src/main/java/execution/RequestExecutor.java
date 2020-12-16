@@ -39,6 +39,7 @@ public class RequestExecutor {
 
     public static void invokeKataClient(final Request request) {
         saveIncomingFile(request.getFileAddress());
+        DynamicCompiler.compileParticipantCode(request.getParticipantName());
 
         try {
             reloadAndRunClass();
@@ -59,7 +60,9 @@ public class RequestExecutor {
 
     private static void reloadAndRunClass() throws ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException {
         DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(DynamicClassLoader.class.getClassLoader());
-        Class participantSolverClass = dynamicClassLoader.loadClass(participantClassName);
+        Class<?> participantSolverClass = dynamicClassLoader.loadClass(participantClassName);
+
+        //todo - combine all incoming user files into kata client solver before sending request to kata server
 
         Method method = null;
         try {
