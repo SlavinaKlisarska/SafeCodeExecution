@@ -1,6 +1,5 @@
 package main;
 
-import execution.DynamicCompiler;
 import execution.RequestExecutionQueueHolder;
 import execution.RequestExecutor;
 import input.Request;
@@ -13,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages={"main","execution"})
 public class Application {
 
-    static RequestExecutionQueueHolder executionQueueHolder;
+    private static RequestExecutionQueueHolder executionQueueHolder;
 
     @Autowired
     public void setRequestExecutionQueueHolder(RequestExecutionQueueHolder requestExecutionQueueHolder){
