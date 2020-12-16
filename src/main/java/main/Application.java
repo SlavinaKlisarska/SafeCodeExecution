@@ -35,21 +35,19 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
 
-        DynamicCompiler.compileParticipantCode("Yasen");
-
-//        while (true) {
-//            if (!executionQueueHolder.isQueueEmpty()) {
-//                if (executionQueueHolder.hasReachedMaxExecutions()) {
-//                    logger.info("New request cannot be processed at the moment because max_parallel_execution capacity has been reached.");
-//                } else {
-//                    logger.info("New request processing has begun. Previous number of active executions was " + executionQueueHolder.getNumberOfActiveExecutions());
-//                    currentRequest = executionQueueHolder.poll();
-//                    new Thread(codeExecutionRunnable).start();
-//                }
-//            } else {
-//                logger.info("Request queue is empty.");
-//            }
-//        }
+        while (true) {
+            if (!executionQueueHolder.isQueueEmpty()) {
+                if (executionQueueHolder.hasReachedMaxExecutions()) {
+                    logger.info("New request cannot be processed at the moment because max_parallel_execution capacity has been reached.");
+                } else {
+                    logger.info("New request processing has begun. Previous number of active executions was " + executionQueueHolder.getNumberOfActiveExecutions());
+                    currentRequest = executionQueueHolder.poll();
+                    new Thread(codeExecutionRunnable).start();
+                }
+            } else {
+                logger.info("Request queue is empty.");
+            }
+        }
     }
 
 }
