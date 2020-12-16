@@ -20,6 +20,7 @@ public class RequestExecutor {
 
     static String participantClassName;
     static String participantClassPath;
+    static String participantMethodName;
 
     @Autowired
     public void setParticipantClassName(@Value("${participant.class.name}") String participantClassName){
@@ -28,6 +29,10 @@ public class RequestExecutor {
     @Autowired
     public void setParticipantClassPath(@Value("${participant.class.path}") String participantClassPath){
         RequestExecutor.participantClassPath = participantClassPath;
+    }
+    @Autowired
+    public void setParticipantMethodName(@Value("${participant.method.name}") String participantMethodName){
+        RequestExecutor.participantMethodName = participantMethodName;
     }
 
     private final static String[] EMPTY_STRING_ARRAY = {};
@@ -58,9 +63,9 @@ public class RequestExecutor {
 
         Method method = null;
         try {
-            method = participantSolverClass.getMethod("main", String[].class);
+            method = participantSolverClass.getMethod(participantMethodName, String[].class);
         } catch (NoSuchMethodException e) {
-            logger.error("Main method missing from class " + participantSolverClass.getName());
+            logger.error(participantMethodName + " method missing from class " + participantSolverClass.getName());
         }
 
         if (method != null) {
