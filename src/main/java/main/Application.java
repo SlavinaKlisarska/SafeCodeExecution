@@ -44,7 +44,6 @@ public class Application {
                     new Thread(codeExecutionRunnable).start();
                 }
             } else {
-                logger.info("Request queue is empty.");
             }
         }
     }

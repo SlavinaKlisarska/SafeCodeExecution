@@ -13,12 +13,19 @@ import java.util.HashMap;
 public class GitManager {
 
     private static final HashMap<String, String> config = new HashMap();
+    private static GitHub github;
+
+    static {
+        try {
+            github = new GitHubBuilder().withOAuthToken("88e0a330d812a4f65509b00bff18189e7b007c88", "SlavinaKlisarska").build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static URL getRepo(String userName) throws IOException {
-        GitHub github = new GitHubBuilder().withOAuthToken("", "SlavinaKlisarska").build();
 
         URL repoUrl;
-//        GitHub github = GitHub.connect();
         String repoName = "gamified-hiring/" + userName;
 
         try {
@@ -30,17 +37,12 @@ public class GitManager {
     }
 
     private static URL createGitRepo(GitHub github, String repoName) throws IOException {
-//        GHRepository repo = github.createRepository(
-//                "gamified-hiring-" + userName,"this is my new repository",
-//                "https://www.kohsuke.org/",false);
-
-        github.isCredentialValid();
         GHRepository repo1 = github.createRepository(repoName).private_(true).create();
 
         repo1.createHook("web", getConfig(),
                 Collections.singletonList(GHEvent.PUSH), true);
 
-//        repo.addCollaborators(github.getUser("abayer"),github.getUser("rtyler"));
+//      repo.addCollaborators(github.getUser("abayer"),github.getUser("rtyler"));
 
         return repo1.getHtmlUrl();
     }
@@ -52,5 +54,11 @@ public class GitManager {
             config.put("insecure_ssl", "0");
         }
         return config;
+    }
+
+    public static boolean pullCodeChanges(String repo) throws IOException {
+//        GHRepository source = github.getRepository(repo).getFileContent()
+//
+        return true;
     }
 }
