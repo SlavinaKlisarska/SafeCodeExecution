@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Scope("singleton")
@@ -16,15 +17,15 @@ public class RequestExecutionQueueHolder {
     @Value("${max.parallel.executions:1}")
     private byte maxParallelExecutions;
 
-    private volatile byte numberOfActiveExecutions;
+    private AtomicInteger numberOfActiveExecutions;
     private final ConcurrentLinkedQueue<Request> executionQueue = new ConcurrentLinkedQueue<>();
 
-    public byte getNumberOfActiveExecutions() {
-        return numberOfActiveExecutions;
+    public int getNumberOfActiveExecutions() {
+        return numberOfActiveExecutions.get();
     }
 
     public boolean hasReachedMaxExecutions() {
-        return maxParallelExecutions == numberOfActiveExecutions;
+        return maxParallelExecutions == numberOfActiveExecutions.get();
     }
 
     public boolean isQueueEmpty() {
@@ -36,11 +37,11 @@ public class RequestExecutionQueueHolder {
     }
 
     public void beginExecution() {
-        ++numberOfActiveExecutions;
+        numberOfActiveExecutions.incrementAndGet();
     }
 
     public void finishExecution() {
-        --numberOfActiveExecutions;
+        numberOfActiveExecutions.decrementAndGet();
     }
 
     public void addRequest(Request request) {
