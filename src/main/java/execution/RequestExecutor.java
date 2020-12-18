@@ -1,7 +1,5 @@
 package execution;
 
-import input.Request;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +36,7 @@ public class RequestExecutor {
     private final static String[] EMPTY_STRING_ARRAY = {};
 
     public static void invokeKataClient(final String participantName) {
-        DynamicCompiler.compileParticipantCode(participantName);
+        //DynamicCompiler.compileParticipantCode(participantName);
 
         try {
             reloadAndRunClass();

@@ -44,6 +44,7 @@ public class Application {
                     new Thread(codeExecutionRunnable).start();
                 }
             } else {
+                //logger.info("No requests to process.");
             }
         }
     }

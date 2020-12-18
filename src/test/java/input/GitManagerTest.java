@@ -9,7 +9,7 @@ public class GitManagerTest {
 
     @Test
     public void testCreateRepoWithWebhook() throws IOException {
-        GitManager.getRepo("ganko");
+//        GitManager.getRepo("ganko");
     }
 
     @Test

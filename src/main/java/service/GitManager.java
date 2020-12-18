@@ -17,7 +17,7 @@ public class GitManager {
 
     static {
         try {
-            github = new GitHubBuilder().withOAuthToken("88e0a330d812a4f65509b00bff18189e7b007c88", "SlavinaKlisarska").build();
+            github = new GitHubBuilder().withOAuthToken("67defa3b78c225ab12b7d4733dc470e6c065d553", "SlavinaKlisarska").build();
         } catch (IOException e) {
             e.printStackTrace();
         }
