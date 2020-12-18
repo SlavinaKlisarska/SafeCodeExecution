@@ -1,10 +1,10 @@
 FROM maven:3.6.3-jdk-11
 
-ARG remoteUser
-ARG remoteToken
-ARG remoteHost
-ARG repoName
-ARG inProjectPomLocation
+ARG remoteUser=SlavinaKlisarska
+ARG remoteToken=67defa3b78c225ab12b7d4733dc470e6c065d553
+ARG remoteHost=github.com
+ARG repoName=FinalProjectBookLords
+ARG inProjectPomLocation=BookLords
 
 RUN mkdir -p /usr/apps
 COPY sources /usr/apps/
