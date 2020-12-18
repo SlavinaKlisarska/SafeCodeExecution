@@ -16,7 +16,7 @@ public class RequestExecutionQueueHolder {
     @Value("${max.parallel.executions:1}")
     private byte maxParallelExecutions;
 
-    private byte numberOfActiveExecutions;
+    private volatile byte numberOfActiveExecutions;
     private final ConcurrentLinkedQueue<Request> executionQueue = new ConcurrentLinkedQueue<>();
 
     public byte getNumberOfActiveExecutions() {
