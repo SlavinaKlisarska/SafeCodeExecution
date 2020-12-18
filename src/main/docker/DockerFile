@@ -10,7 +10,8 @@ RUN mkdir -p /usr/apps
 COPY sources /usr/apps/
 WORKDIR /usr/apps
 RUN git -c credential.helper='!f() { echo "username=${remoteUser}"; echo "password=${remoteToken}"; };f' clone --depth 1 --no-tags https://${remoteHost}/${remoteUser}/${repoName}.git
-RUN mvn -f ${repoName}/${inProjectPomLocation}/pom.xml clean install -U
+ENV MAVEN_CONFIG /usr/apps/.m2
+RUN mvn -f ${repoName}/${inProjectPomLocation}/pom.xml clean install -o
 EXPOSE 8080
 #ENTRYPOINT ["java", "-jar", "kata-engine.jar"]
 ENTRYPOINT ["java", "-jar", "SafeCodeExecution-1.0-SNAPSHOT.jar"]

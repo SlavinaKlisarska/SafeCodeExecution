@@ -65,7 +65,7 @@ public class RequestExecutor {
         }
 
         if (method != null) {
-            method.invoke(null, (Object) EMPTY_STRING_ARRAY); // static method doesn't have an instance
+//            method.invoke(null, (Object) EMPTY_STRING_ARRAY); // static method doesn't have an instance
         } else {
             logger.error("New class " + participantMethodName + " method could not be obtained properly.");
         }
