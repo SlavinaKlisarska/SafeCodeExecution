@@ -31,7 +31,7 @@ public class GitConfigProperties {
     }
 
     public String getRepoToken() {
-        return "";
+        return tokenCreateRepo;
     }
 
     public String getUser() {
