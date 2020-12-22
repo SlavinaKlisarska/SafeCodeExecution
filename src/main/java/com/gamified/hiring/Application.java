@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication(scanBasePackages={"com.gamified.hiring"})
-@EnableConfigurationProperties()
+@EnableConfigurationProperties
 public class Application {
 
     private static RequestExecutionQueueHolder executionQueueHolder;

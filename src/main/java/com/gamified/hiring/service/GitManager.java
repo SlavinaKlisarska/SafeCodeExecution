@@ -18,8 +18,8 @@ import java.util.List;
 @Service
 public class GitManager {
 
-    public static final String WEB_HOOK_PREFIX = "web";
-    public static final String REPO_PREFIX = "gamified-hiring/";
+    private static final String WEB_HOOK_PREFIX = "web";
+    private static final String REPO_PREFIX = "gamified-hiring";
 
     @Autowired
     private GitConfigProperties gitConfig;
@@ -31,15 +31,20 @@ public class GitManager {
 
         URL repoUrl;
         GHUser ghUser = getGhUser(email);
-        String repoName = REPO_PREFIX + ghUser.getLogin();
+        String login = ghUser.getLogin();
 
         try {
-            repoUrl = gitHub.getRepository(repoName).getHtmlUrl();
+            repoUrl = gitHub.getRepository(getRepoNameWithOwner(login)).getHtmlUrl();
         } catch (IOException e) {
+            String repoName = REPO_PREFIX + "/" + login;
             repoUrl = createGitRepo(gitHub, repoName, ghUser);
         }
 
         return repoUrl;
+    }
+
+    private String getRepoNameWithOwner(String login) throws IOException {
+        return gitHub.getMyself().getLogin() + "/" + REPO_PREFIX + "-" + login;
     }
 
     private GHUser getGhUser(String email) throws IOException {
@@ -50,7 +55,7 @@ public class GitManager {
     private URL createGitRepo(GitHub github, String repoName, GHUser user) throws IOException {
         GHRepository repo = github.createRepository(repoName).private_(true).create();
 
-        repo.createHook(WEB_HOOK_PREFIX, gitConfig.getConfigCreateHook(),
+        repo.createHook(WEB_HOOK_PREFIX, gitConfig.getWebhookConfig(),
                 Collections.singletonList(GHEvent.PUSH), true);
 
         repo.addCollaborators(user);

@@ -11,18 +11,9 @@ import java.util.Map;
 public class GitConfigProperties {
 
     private int contentType;
-    private String webhookUrl;
     private String user;
     private String tokenCreateRepo;
-
-    public Map<String, String> getConfigCreateHook() {
-        Map<String, String> config = new HashMap<>();
-        config.put("url", webhookUrl);
-        config.put("content_type", "json");
-        config.put("insecure_ssl", "0");
-
-        return config;
-    }
+    private Map<String, String> webhookConfig;
 
     public String getRepoToken() {
         return tokenCreateRepo;
@@ -52,12 +43,12 @@ public class GitConfigProperties {
         this.tokenCreateRepo = tokenCreateRepo;
     }
 
-    public String getWebhookUrl() {
-        return webhookUrl;
+    public Map<String, String> getWebhookConfig() {
+        return webhookConfig;
     }
 
-    public void setWebhookUrl(String webhookUrl) {
-        this.webhookUrl = webhookUrl;
+    public void setWebhookConfig(Map<String, String> webhookConfig) {
+        this.webhookConfig = webhookConfig;
     }
 
 }
