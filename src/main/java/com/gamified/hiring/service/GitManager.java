@@ -7,6 +7,7 @@ import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +27,8 @@ public class GitManager {
 
     private GitHub gitHub;
 
-
+    @Retryable
     public URL getRepo(String email) throws IOException {
-
         URL repoUrl;
         GHUser ghUser = getGhUser(email);
         String login = ghUser.getLogin();
@@ -36,8 +36,7 @@ public class GitManager {
         try {
             repoUrl = gitHub.getRepository(getRepoNameWithOwner(login)).getHtmlUrl();
         } catch (IOException e) {
-            String repoName = REPO_PREFIX + "/" + login;
-            repoUrl = createGitRepo(gitHub, repoName, ghUser);
+            repoUrl = createGitRepo(gitHub, login, ghUser);
         }
 
         return repoUrl;
@@ -49,10 +48,14 @@ public class GitManager {
 
     private GHUser getGhUser(String email) throws IOException {
         List<GHUser> users = gitHub.searchUsers().q(email).list().toList();
-        return users.get(0);
+        if (users.size() == 1) {
+            return users.get(0);
+        }
+        throw new IllegalArgumentException("User email not visible!");
     }
 
-    private URL createGitRepo(GitHub github, String repoName, GHUser user) throws IOException {
+    private URL createGitRepo(GitHub github, String login, GHUser user) throws IOException {
+        String repoName = REPO_PREFIX + "/" + login;
         GHRepository repo = github.createRepository(repoName).private_(true).create();
 
         repo.createHook(WEB_HOOK_PREFIX, gitConfig.getWebhookConfig(),
