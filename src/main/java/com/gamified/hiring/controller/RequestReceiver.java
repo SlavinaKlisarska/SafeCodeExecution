@@ -14,10 +14,10 @@ public class RequestReceiver {
     @Autowired
     private GitManager gitManager;
 
-    @GetMapping(value = "/repoUrl")//+return token
-    public String getRepo(@RequestParam(value = "userName") String userName) {
+    @GetMapping(value = "/repo")
+    public String getRepo(@RequestParam(value = "email") String email) {
         try {
-           return gitManager.getRepo(userName).toString();
+           return gitManager.getRepo(email).toString();
         } catch (IOException e) {
             e.printStackTrace();
             return "NOT_FOUND";

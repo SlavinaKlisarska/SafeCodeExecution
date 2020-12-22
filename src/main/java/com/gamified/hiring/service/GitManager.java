@@ -19,6 +19,7 @@ import java.util.List;
 public class GitManager {
 
     public static final String WEB_HOOK_PREFIX = "web";
+    public static final String REPO_PREFIX = "gamified-hiring/";
 
     @Autowired
     private GitConfigProperties gitConfig;
@@ -30,7 +31,7 @@ public class GitManager {
 
         URL repoUrl;
         GHUser ghUser = getGhUser(email);
-        String repoName = "gamified-hiring/" + ghUser.getLogin();
+        String repoName = REPO_PREFIX + ghUser.getLogin();
 
         try {
             repoUrl = gitHub.getRepository(repoName).getHtmlUrl();

@@ -1,11 +1,8 @@
 package com.gamified.hiring.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Configuration;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,16 +11,13 @@ import java.util.Map;
 public class GitConfigProperties {
 
     private int contentType;
-    private String insecureSsl;
-    @LocalServerPort
-    private String port;
-
+    private String webhookUrl;
     private String user;
     private String tokenCreateRepo;
 
-    public Map<String, String> getConfigCreateHook() throws UnknownHostException {
+    public Map<String, String> getConfigCreateHook() {
         Map<String, String> config = new HashMap<>();
-        config.put("url", "http://" + InetAddress.getLocalHost() + ":" + port + "/pushEvent");
+        config.put("url", webhookUrl);
         config.put("content_type", "json");
         config.put("insecure_ssl", "0");
 
@@ -50,22 +44,6 @@ public class GitConfigProperties {
         this.contentType = contentType;
     }
 
-    public String getInsecureSsl() {
-        return insecureSsl;
-    }
-
-    public void setInsecureSsl(String insecureSsl) {
-        this.insecureSsl = insecureSsl;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
     public String getTokenCreateRepo() {
         return tokenCreateRepo;
     }
@@ -73,4 +51,13 @@ public class GitConfigProperties {
     public void setTokenCreateRepo(String tokenCreateRepo) {
         this.tokenCreateRepo = tokenCreateRepo;
     }
+
+    public String getWebhookUrl() {
+        return webhookUrl;
+    }
+
+    public void setWebhookUrl(String webhookUrl) {
+        this.webhookUrl = webhookUrl;
+    }
+
 }
